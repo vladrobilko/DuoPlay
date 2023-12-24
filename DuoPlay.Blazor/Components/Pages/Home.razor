@@ -1,0 +1,81 @@
+﻿@page "/"
+@using Bogus
+@using DuoPlay.Application.Helpers
+@using DuoPlay.Application.Services.Interfaces
+@inject IPlayerService PlayerService
+@inject ISessionService SessionService
+@inject NavigationManager NavigationManager
+
+<PageTitle>DuoPlay</PageTitle>
+
+<div>
+    <div class="name-input">
+        <h3>Get ready for fun! Enter your name to kick off the excitement and choose your game!</h3>
+        <div class="input-container">
+            <input class="custom-input" @bind="playerName" placeholder="Enter your name" />
+            <button class="random-button" @onclick="GenerateRandomName">Random</button>
+        </div>
+        @if (isNameInvalid)
+        {
+            <p class="error-message">Player with this name exists or input is empty. Enter name!</p>
+        }
+    </div>
+
+    <div class="game-options">
+        <div class="game-option">
+            <h4>Battle ship</h4>
+            <img src="battle_ship_image.png" alt="Battle ship" class="game-image" />
+            <div class="button-container">
+                <button @onclick="() => CreateGameAsync(GameType.BattleShip)">Create</button>
+                <button @onclick="() => JoinGameAsync(GameType.BattleShip)" class="join">Join</button>
+            </div>
+        </div>
+
+        <div class="game-option">
+            <h4>Tic-Tac-Toe</h4>
+            <img src="tic_tac_toe_image.png" alt="Tic-Tac-Toe" class="game-image" />
+            <div class="button-container">
+                <button @onclick="()=> CreateGameAsync(GameType.TicTacToe)">Create</button>
+                <button @onclick="() => JoinGameAsync(GameType.TicTacToe)" class="join">Join</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private string playerName;
+
+    private bool isNameInvalid;
+
+    private async Task CreateGameAsync(GameType gameType)
+    {
+        if (await IsNameNotExistAndValid() == false) return;
+        await PlayerService.CreatePlayer(playerName);
+        var sessionName = await SessionService.CreateSession(playerName, gameType);
+        if (gameType == GameType.BattleShip) NavigationManager.NavigateTo($"/ChooseBattleShipArea/{sessionName}/{playerName}");
+        if (gameType == GameType.TicTacToe) NavigationManager.NavigateTo($"/TicTacToe/{sessionName}/{playerName}");
+    }
+
+    private async Task JoinGameAsync(GameType gameType)
+    {
+        if (await IsNameNotExistAndValid() == false) return;
+        await PlayerService.CreatePlayer(playerName);
+        NavigationManager.NavigateTo($"/JoinSession/{gameType}/{playerName}");
+    }
+
+    private async Task<bool> IsNameNotExistAndValid()
+    {
+        if (string.IsNullOrWhiteSpace(playerName) || await PlayerService.IsPlayerExist(playerName))
+        {
+            isNameInvalid = true;
+            return false;
+        }
+        return true;
+    }
+
+    private void GenerateRandomName()
+    {
+        var faker = new Faker();
+        playerName = faker.Person.FirstName;
+    }
+}

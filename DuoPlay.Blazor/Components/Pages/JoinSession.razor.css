@@ -1,0 +1,63 @@
+﻿caption {
+    color: #EAEAEA;
+    font-family: Roboto, sans-serif;
+    font-size: 40px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    margin-top: 10px;
+}
+
+.game-options {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.session-table {
+    width: 80%;
+    max-width: 800px;
+    margin: auto;
+    background-color: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+th, td {
+    padding: 15px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background-color: #293FBE;
+    color: white;
+}
+
+td {
+    background-color: #f8f8f8;
+}
+
+.button-container button {
+    padding: 15px 40px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: #293FBE;
+    color: #fff;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+    .button-container button:hover {
+        background-color: #1E2C7E;
+    }
+
+.error-message {
+    color: #FF0000;
+    font-size: 20px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}

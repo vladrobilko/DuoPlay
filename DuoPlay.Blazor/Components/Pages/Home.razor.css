@@ -1,0 +1,119 @@
+﻿.name-input {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #EAEAEA;
+    font-family: Roboto, sans-serif;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
+
+.game-options {
+    display: flex;
+    justify-content: space-around;
+}
+
+.game-option {
+    text-align: center;
+}
+
+.game-image {
+    width: 400px;
+    height: 400px;
+    border-radius: 30px;
+    margin-bottom: 15px;
+}
+
+.button-container {
+    display: flex;
+    justify-content: space-around;
+}
+
+    .button-container button {
+        display: flex;
+        padding: 16px 60px 17px 60px;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        border-radius: 10px;
+        background: #293FBE;
+        color: #fff;
+        font-size: 15px;
+        cursor: pointer;
+        border: none;
+        outline: none;
+    }
+
+        .button-container button.join {
+            background: transparent;
+            border: 1px solid #293FBE;
+            color: #293FBE;
+        }
+
+        .button-container button:hover {
+            background: #1E2C7E;
+            color: #fff;
+        }
+
+        .button-container button.join:hover {
+            background: #293FBE;
+            color: #fff;
+        }
+
+h4 {
+    color: #EAEAEA;
+    font-family: Roboto, sans-serif;
+    font-size: 40px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    text-transform: uppercase;
+    margin-bottom: 15px;
+    margin-top: 15px;
+}
+
+.custom-input {
+    flex: 1;
+    background-color: #0F142F;
+    width: 400px;
+    height: 40px;
+    flex-shrink: 0;
+    border-radius: 10px;
+    border: 1px solid #EAEAEA;
+    color: #EAEAEA;
+    font-size: 20px;
+    padding: 12px 20px;
+    margin: 8px 0;
+    box-sizing: border-box;
+}
+
+.error-message {
+    color: #FF0000;
+    font-size: 20px;
+    margin-top: 5px;
+}
+
+.random-button {
+    margin-left: 10px;
+    padding: 13px 13px 13px 13px;
+    border-radius: 10px;
+    background: #293FBE;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+    outline: none;
+}
+
+    .random-button button:hover {
+        background: #1E2C7E;
+        color: #fff;
+    }
+
+.input-container {
+    display: flex;
+    align-items: center;
+}

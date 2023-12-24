@@ -1,0 +1,142 @@
+﻿@inject ITicTacToeService TicTacToeService
+@page "/TicTacToe/{sessionName}/{playerName}"
+@using DuoPlay.Application.Services.Interfaces
+@using DuoPlay.TicTacToe.Domain
+
+
+<PageTitle>Tic-Tac-Toe</PageTitle>
+
+@if (!isGameStart || board == null)
+{
+    <div class="loading-container">
+        <h3>Please, wait for the player.</h3>
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Loading...</div>
+    </div>
+}
+else
+{
+    <div class="wrapper">
+        <div class="container">
+            <div class="play-area">
+                <h3>Tic-Tak-Toe!</h3>
+                @for (int i = 0; i < 3; i++)
+                {
+                    <div class="row">
+                        @for (int j = 0; j < 3; j++)
+                        {
+                            var index = i * 3 + j;
+                            var cellContent = board[index];
+
+                            <div class="cell" @onclick="() => CellClicked(index)">
+                                @if (cellContent == 'X')
+                                {
+                                    <img src="cross.png" alt="Cross" />
+                                }
+                                else if (cellContent == 'O')
+                                {
+                                    <img src="circle.png" alt="Circle" />
+                                }
+                                else
+                                {
+                                    <img src="empty.png" alt="Circle" />
+
+                                }
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+
+            @if (isPlayerTurn && moveResult != TicTacToeResult.Win && moveResult != TicTacToeResult.Draw)
+            {
+                <h3 style="color: chocolate">Your turn! Choose empry field!</h3>
+            }
+            else if (!isPlayerTurn && moveResult != TicTacToeResult.Win && moveResult != TicTacToeResult.Draw)
+            {
+                <h3 style="color: chocolate">Enemy turn!</h3>
+            }
+            else
+            {
+                <h3 style="color: red">@message</h3>
+                <NavLink href="/">Go to Home Page to play again</NavLink>
+            }
+        </div>
+    </div>
+
+}
+
+@code {
+    [Parameter]
+    public string sessionName { get; set; }
+    [Parameter]
+    public string playerName { get; set; }
+
+    public bool isPlayerTurn { get; set; }
+
+    public bool isGameStart { get; set; }
+
+    public char[] board { get; set; }
+
+    public TicTacToeResult moveResult { get; set; }
+
+    public string message { get; set; }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await TicTacToeService.ReadyToGame(playerName, sessionName);
+        while (true)
+        {
+            isGameStart = await TicTacToeService.IsGameStarted(sessionName);
+            if (isGameStart)
+            {
+                await PlayGame();
+                break;
+            }
+            await Task.Delay(2000);
+            StateHasChanged();
+        }
+    }
+    private async Task PlayGame()
+    {
+        while (true)
+        {
+            isPlayerTurn = await TicTacToeService.IsPlayerTurn(playerName, sessionName);
+            board = await TicTacToeService.GetBoard(sessionName);
+            message = await TicTacToeService.GetGameMessage(sessionName);
+            if (!string.IsNullOrEmpty(message))
+            {
+                moveResult = TicTacToeResult.Draw;
+                StateHasChanged();
+                break;
+            }
+            if (isPlayerTurn)
+            {
+                StateHasChanged();
+                break;
+            }
+            await Task.Delay(2000);
+            StateHasChanged();
+        }
+    }
+
+    private async Task CellClicked(int columnIndex)
+    {
+        if (isPlayerTurn && moveResult != TicTacToeResult.Win && moveResult != TicTacToeResult.Draw)
+        {
+            moveResult = await TicTacToeService.MakeMove(playerName, sessionName, columnIndex);
+            if (moveResult == TicTacToeResult.Win || moveResult == TicTacToeResult.Draw)
+            {
+                board = await TicTacToeService.GetBoard(sessionName);
+                message = await TicTacToeService.GetGameMessage(sessionName);
+                StateHasChanged();
+                return;
+            }
+            board = await TicTacToeService.GetBoard(sessionName);
+            isPlayerTurn = false;
+            StateHasChanged();
+            await PlayGame();
+        }
+    }
+}

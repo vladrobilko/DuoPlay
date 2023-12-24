@@ -1,0 +1,139 @@
+﻿.wrapper {
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+    background-color: #0F142F;
+}
+
+.container {
+    text-align: center;
+}
+
+.play-area {
+    display: inline-block;
+    margin-right: 50px;
+    margin-bottom: 20px;
+}
+
+.row {
+    display: flex;
+}
+
+.cell {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #293FBE;
+    color: white;
+    font-weight: bold;
+    border: 1px solid #fff;
+    position: relative;
+}
+
+.cell-enemy {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #293FBE;
+    color: white;
+    font-weight: bold;
+    border: 1px solid #fff;
+    position: relative;
+}
+
+    .cell-enemy:hover {
+        background-color: #ffa;
+    }
+
+.icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.cell.ship::after {
+    content: "";
+    display: none;
+}
+
+h3 {
+    color: azure;
+    font-family: Roboto, sans-serif;
+    font-size: 40px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    margin-bottom: 25px;
+    margin-top: 25px;
+}
+
+.button-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 50px;
+}
+
+    .button-container button {
+        display: flex;
+        padding: 16px 60px 17px 60px;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        border-radius: 10px;
+        background: #293FBE;
+        color: #fff;
+        font-size: 16px;
+        cursor: pointer;
+        border: none;
+        outline: none;
+    }
+
+        .button-container button:hover {
+            background: #1E2C7E;
+            color: #fff;
+        }
+
+.loading-container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 20px;
+    border-radius: 8px;
+    z-index: 999;
+}
+
+.loading-spinner {
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-top: 4px solid #293FBE;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+}
+
+.loading-text {
+    margin-top: 10px;
+    color: #fff;
+    font-size: 16px;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}

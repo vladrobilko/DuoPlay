@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DuoPlay.BattleShip.Domain\DuoPlay.BattleShip.Domain.csproj" />
+    <ProjectReference Include="..\DuoPlay.DataManagement\DuoPlay.DataManagement.csproj" />
+    <ProjectReference Include="..\DuoPlay.TicTacToe.Domain\DuoPlay.TicTacToe.Domain.csproj" />
+  </ItemGroup>
+
+</Project>

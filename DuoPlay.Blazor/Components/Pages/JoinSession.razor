@@ -1,0 +1,82 @@
+﻿@using DuoPlay.Application.Helpers
+@using DuoPlay.Application.Services.Interfaces
+@inject ISessionService SessionService
+@inject NavigationManager NavigationManager
+
+@page "/JoinSession/{gameType}/{playerName}"
+
+<PageTitle>Join session</PageTitle>
+
+<div class="game-options">
+
+    <table class="session-table">
+        <caption>
+            Select game session
+            @if (!isSessionAllowed && !loadingSessions)
+            {
+                <p class="error-message">The session was busy, please select another one</p>
+            }
+        </caption>
+        <thead>
+            <tr>
+                <th>Session name</th>
+                <th>Press to Join</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (loadingSessions)
+            {
+                <tr>
+                    <td colspan="2">Loading sessions...</td>
+                </tr>
+            }
+            else
+            {
+                @foreach (var sessionName in sessions)
+                {
+                    <tr>
+                        <td>@sessionName</td>
+                        <td>
+                            <div class="button-container">
+                                <button @onclick="() => JoinToSession(sessionName)">Join</button>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>
+
+@code {
+    [Parameter]
+    public string gameType { get; set; }
+
+    [Parameter]
+    public string playerName { get; set; }
+
+    private List<string> sessions;
+    private bool loadingSessions = false;
+    private bool isSessionAllowed = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        loadingSessions = true;
+        sessions = await SessionService.GetNotStartedSessions(gameType.ToGameType());
+        sessions.Reverse();
+        loadingSessions = false;
+    }
+
+    private async Task JoinToSession(string sessionName)
+    {
+        if (await SessionService.JoinSession(playerName, sessionName) == false)
+        {
+            isSessionAllowed = false;
+            sessions = await SessionService.GetNotStartedSessions(gameType.ToGameType());
+            StateHasChanged();
+            return;
+        }
+        if (gameType == GameType.BattleShip.ToString()) NavigationManager.NavigateTo($"/ChooseBattleShipArea/{sessionName}/{playerName}");
+        if (gameType == GameType.TicTacToe.ToString()) NavigationManager.NavigateTo($"/TicTacToe/{sessionName}/{playerName}");
+    }
+}

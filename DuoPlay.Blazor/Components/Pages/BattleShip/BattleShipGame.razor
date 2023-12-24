@@ -1,0 +1,173 @@
+﻿@page "/BattleShipGame/{sessionName}/{playerName}"
+@using DuoPlay.Application.Services.Interfaces
+@using DuoPlay.BattleShip.Domain
+@inject IBattleShipService BattleShipService
+@using DuoPlay.Application.Helpers
+@using DuoPlay.BattleShip.Domain.Enums
+@inject NavigationManager NavigationManager
+@attribute [StreamRendering]
+
+<PageTitle>Battle Ship</PageTitle>
+@if (playArea == null)
+{
+    <div class="loading-container">
+        <h3>Please, wait for the player.</h3>
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Loading...</div>
+    </div>
+}
+else
+{
+    <div class="wrapper">
+        <div class="container">
+            <div class="play-area">
+                <h3>@playerName area</h3>
+                @for (int i = 0; i < playArea.Cells.GetLength(0); i++)
+                {
+                    <div class="row">
+                        @for (int j = 0; j < playArea.Cells.GetLength(0); j++)
+                        {
+                            <div class="cell">
+                                @if (playArea.Cells[i, j].State == CellState.BusyDeck)
+                                {
+                                    <img class="icon" src="ship_icon.png" alt="Ship Icon" />
+                                }
+                                @if (playArea.Cells[i, j].State == CellState.HasHit)
+                                {
+                                    <img class="icon" src="hit_icon.png" alt="Hit Icon" />
+                                }
+                                @if (playArea.Cells[i, j].State == CellState.HasMiss)
+                                {
+                                    <img class="icon" src="miss_icon.png" alt="Miss Icon" />
+                                }
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+            <div class="play-area">
+                <h3>Enemy area</h3>
+                @for (int i = 0; i < enemyPlayArea.Cells.GetLength(0); i++)
+                {
+                    <div class="row">
+                        @for (int j = 0; j < enemyPlayArea.Cells.GetLength(0); j++)
+                        {
+                            var row = i;
+                            var col = j;
+                            <div class="cell-enemy" @onclick="(e) => Shoot(row, col)">
+                                @if (enemyPlayArea.Cells[i, j].State == CellState.HasHit)
+                                {
+                                    <img class="icon" src="hit_icon.png" alt="Hit Icon" />
+                                }
+                                @if (enemyPlayArea.Cells[i, j].State == CellState.HasMiss)
+                                {
+                                    <img class="icon" src="miss_icon.png" alt="Miss Icon" />
+                                }
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+
+            @if (isPlayerTurn)
+            {
+                <h3 style="color: chocolate">Select a target on the enemy area!</h3>
+            }
+            else
+            {
+                <h3 style="color: chocolate">Please, wait for the enemy turn!</h3>
+            }
+            <h3 style="color: chocolate">Last action: @gameMessage</h3>
+            <NavLink href="/">Go to Home Page to play another game or play again</NavLink>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public string sessionName { get; set; }
+
+    [Parameter]
+    public string playerName { get; set; }
+
+    public string gameMessage { get; set; }
+
+    public bool isPlayerTurn { get; set; }
+
+    private PlayArea playArea;
+
+    private PlayArea enemyPlayArea;
+
+    protected override async Task OnInitializedAsync()
+    {
+        while (true)
+        {
+            var playerStateModel = await BattleShipService.GetPlayerStateModel(playerName, sessionName);
+            if (playerStateModel != null)
+            {
+                await UpdateGameInformationForWaiting(playerStateModel);
+                StateHasChanged();
+                await WaitForPlayerTurn();
+                break;
+            }
+            await Task.Delay(3000);
+            StateHasChanged();
+        }
+    }
+
+    private async Task WaitForPlayerTurn()
+    {
+        while (true)
+        {
+            await GetGameInformation();
+            if (isPlayerTurn)
+            {
+                StateHasChanged();
+                break;
+            }
+            StateHasChanged();
+            await Task.Delay(3000);
+        }
+    }
+
+    private async Task Shoot(int row, int col)
+    {
+        if (isPlayerTurn)
+        {
+            await BattleShipService.Shoot(col, row, playerName, sessionName);
+            await GetGameInformation();
+            StateHasChanged();
+            if (!isPlayerTurn) await WaitForPlayerTurn();
+        }
+    }
+
+    private async Task GetGameInformation()
+    {
+        var gameState = await BattleShipService.GetGameStateModel(sessionName);
+        isPlayerTurn = await BattleShipService.IsPlayerTurn(playerName, sessionName);
+        UpdatePlayAreas(gameState);
+        gameMessage = gameState.GameMessage;
+    }
+
+    private void UpdatePlayAreas(GameState gameState)
+    {
+        if (gameState.Player1.NamePlayer == playerName)
+        {
+            playArea = gameState.Player1.GetPlayArea();
+            enemyPlayArea = gameState.Player2.GetPlayArea();
+        }
+        else
+        {
+            playArea = gameState.Player2.GetPlayArea();
+            enemyPlayArea = gameState.Player1.GetPlayArea();
+        }
+    }
+
+    private async Task UpdateGameInformationForWaiting(PlayerStateModel playerStateModel)
+    {
+        gameMessage = await BattleShipService.GetGameMessage(sessionName);
+        isPlayerTurn = await BattleShipService.IsPlayerTurn(playerName, sessionName);
+        playArea = playerStateModel.PlayArea;
+        enemyPlayArea = playerStateModel.EnemyPlayArea;
+    }
+}

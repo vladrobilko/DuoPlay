@@ -1,0 +1,64 @@
+﻿@page "/ChooseBattleShipArea/{sessionName}/{playerName}"
+@using DuoPlay.Application.Services.Interfaces
+@using DuoPlay.BattleShip.Domain
+@inject IBattleShipService BattleShipService
+@using DuoPlay.Application.Helpers
+@using DuoPlay.BattleShip.Domain.Enums
+@inject NavigationManager NavigationManager
+
+<PageTitle>Battle ship area</PageTitle>
+
+<div class="wrapper">
+    <div class="container">
+        <h3>Choose Play Area</h3>
+        <div class="play-area">
+            @for (int i = 0; i < stateModel.PlayArea.Cells.GetLength(0); i++)
+            {
+                <div class="row">
+                    @for (int j = 0; j < stateModel.PlayArea.Cells.GetLength(0); j++)
+                    {
+                        <div class="cell">
+                            @if (stateModel.PlayArea.Cells[i, j].State == CellState.BusyDeck)
+                            {
+                                <img class="ship-icon" src="ship_icon.png" alt="Ship Icon" />
+                            }
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+
+        <div class="button-container">
+            <button @onclick="Generate">Generate</button>
+            <button @onclick="Choose">Choose</button>
+        </div>
+    </div>
+</div>
+
+
+@code {
+    [Parameter]
+    public string sessionName { get; set; }
+
+    [Parameter]
+    public string playerName { get; set; }
+
+    private PlayerStateModel stateModel;
+
+    protected override async Task OnInitializedAsync()
+    {
+        stateModel = BattleShipService.GetPlayerStateModelToChoosePlayArea(playerName);
+    }
+
+    private async Task Generate()
+    {
+        await OnInitializedAsync();
+        StateHasChanged();
+    }
+
+    private async Task Choose()
+    {
+        await BattleShipService.ReadyToGame(stateModel, playerName, sessionName);
+        NavigationManager.NavigateTo($"/BattleShipGame/{sessionName}/{playerName}");
+    }
+}
