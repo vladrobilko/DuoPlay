@@ -9,7 +9,7 @@
 @if (!isGameStart || board == null)
 {
     <div class="loading-container">
-        <h3>Please, wait for the player.</h3>
+        <h3>Please, wait for a player.</h3>
         <div class="loading-spinner"></div>
         <div class="loading-text">Loading...</div>
     </div>
@@ -50,11 +50,11 @@ else
 
             @if (isPlayerTurn && moveResult != TicTacToeResult.Win && moveResult != TicTacToeResult.Draw)
             {
-                <h3 style="color: chocolate">Your turn! Choose empry field!</h3>
+                <h3 style="color: chocolate">Your turn! Choose empty field!</h3>
             }
             else if (!isPlayerTurn && moveResult != TicTacToeResult.Win && moveResult != TicTacToeResult.Draw)
             {
-                <h3 style="color: chocolate">Enemy turn!</h3>
+                <h3 style="color: chocolate">Enemy’s turn!</h3>
             }
             else
             {
